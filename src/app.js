@@ -9,16 +9,16 @@ const app = express();
 
 // require("./utils/cronjob");
 
-// app.use("/test", (req, res) => {
-//   res.send("Hello World!");
-// });
-// app.use("/shreyas", (req, res) => {
-//   res.send("Hello World!");
-// });
+app.use("/test", (req, res) => {
+  res.send("Hello World!");
+});
+app.use("/shreyas", (req, res) => {
+  res.send("Hello World!");
+});
   
-// app.listen(7777, () => {
-//     console.log("Server is successfully listening on port 7777...");
-//   });  
+app.listen(7777, () => {
+    console.log("Server is successfully listening on port 7777...");
+  });  
 
 
 // app.use(
