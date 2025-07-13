@@ -1,0 +1,15 @@
+{
+  "name": "dev-tinder",
+  "version": "1.0.0",
+  "description": "Tinder for Devs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC"
+}
