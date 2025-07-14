@@ -322,7 +322,25 @@
 const express = require("express");
 const connectDB = require("./config/database.js"); // Import the database connection
 const app = express();
-  
+const User = require("./Models/user.js"); // Import the User model
+
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Sachin",
+    lastName: "Tendulkar",
+    email: "sachin@gmail.com",
+    password: "23344554refefdfd",
+    age: 52,
+  });
+  try {
+    await user.save();
+    res.send("User added successfully!");
+  } catch (error) {
+    //  console.error("Error adding user:", error);
+    res.status(500).send("Error saving the user" + err.message);
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("Database connected successfully!");
