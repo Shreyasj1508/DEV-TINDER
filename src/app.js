@@ -317,27 +317,60 @@
 //   res.send("All data deleted successfully!");
 // });
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//                                  EP - S2 - E6;
+//                                  EP - S2 - E6;                    
+
+// const express = require("express");
+// const connectDB = require("./config/database.js"); // Import the database connection
+// const app = express();
+// const User = require("./Models/user.js"); // Import the User model
+
+// app.post("/signup", async (req, res) => {
+//   const user = new User({
+//     firstName: "Sachin",
+//     lastName: "Tendulkar",
+//     email: "sachin@gmail.com",
+//     password: "23344554refefdfd",
+//     age: 52,
+//   });
+//   try {
+//     await user.save();
+//     res.send("User added successfully!");
+//   } catch (error) {
+//     //  console.error("Error adding user:", error);
+//     res.status(500).send("Error saving the user" + err.message);
+//   }
+// });
+
+// connectDB()
+//   .then(() => {
+//     console.log("Database connected successfully!");
+
+//     app.listen(7777, () => {
+//       console.log("Server is successfully listening on port 7777...");
+//     });
+//   })
+//   .catch((err) => {
+//     console.error("Database connection failed:", err);
+//   });
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                 S-2  E-7
 
 const express = require("express");
 const connectDB = require("./config/database.js"); // Import the database connection
 const app = express();
 const User = require("./Models/user.js"); // Import the User model
+app.use(express.json()); // Middleware to parse JSON request bodies
 
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Sachin",
-    lastName: "Tendulkar",
-    email: "sachin@gmail.com",
-    password: "23344554refefdfd",
-    age: 52,
-  });
+  const user = new User(req.body);
+  //  console.log("Received user data:", req.body);
+  //  Log the received data
   try {
     await user.save();
     res.send("User added successfully!");
   } catch (error) {
     //  console.error("Error adding user:", error);
-    res.status(500).send("Error saving the user" + err.message);
+    res.status(500).send("Error saving the user");
   }
 });
 
