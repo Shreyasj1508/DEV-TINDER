@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
         if (!validator.isEmail(value)) {
           throw new Error("Email is not valid!");
         }
-      } 
+      },
     },
     password: {
       type: String,
@@ -33,11 +33,11 @@ const userSchema = new mongoose.Schema(
       minLength: 6,
       maxLength: 1024,
       trim: true,
-       validate(value) {
+      validate(value) {
         if (!validator.isStrongPassword(value)) {
-          throw new Error("Enter strong password: "+ value);
+          throw new Error("Enter strong password: " + value);
         }
-      } 
+      },
     },
     age: {
       type: Number,
@@ -61,11 +61,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fdummy-profile&psig=AOvVaw1iNN7EGm6TkJL6Rl3fE8NM&ust=1752658271908000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLjh24DHvo4DFQAAAAAdAAAAABAE",
-        validate(value) {
-          if (!validator.isURL(value)) {
-            throw new Error("Photo URL is not valid!");
-          }
-        }
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Photo URL is not valid!");
+        }  
+      },
     },
     about: {
       type: String,

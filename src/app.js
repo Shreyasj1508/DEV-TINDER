@@ -388,30 +388,85 @@
 //
 //
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////                              S-2 E-7
+///////////////////////////////////////////////////////////////////////////////////////////////////////                              S-2 E-7 and E-8
 
 const express = require("express");
 const connectDB = require("./config/database.js"); // Import the database connection
 const app = express();
 const User = require("./Models/user.js"); // Import the User model
 app.use(express.json()); // Middleware to parse JSON request bodies
-
+const { validateSignup } = require("./utils/validation");
+app.use(express.json());
+const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
+//
+//
 //          POST API - /signup - add a new user to the database
-
+//
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  //  console.log("Received user data:", req.body);
   try {
+    //validation of data
+    validateSignup(req);
+
+    // encrypt the password
+    const { firstName, lastName, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+
+    // Creating a new instance of the User model with the request body
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+
     await user.save();
     res.send("User added successfully!");
   } catch (error) {
     //  console.error("Error adding user:", error);
-    res.status(400).send("Error saving the user " + error.message);
+    res.status(400).send("ERROR:" + error.message);
   }
 });
+//
+//
+//
+//
+//           Login API
+//
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body; // Extract email and password from the request
+  try {
+    // Find the user by email & Include the password field in the query result
+    const user = await User.findOne({ email }).select("+password");
 
-//     Get user by email
+    console.log("User found:", user);
+    if (!user) {
+      return res.status(404).send("Invalid credentials!");
+    }
 
+    // Compare the provided password (write by client) with the stored hashed password (actual passwords )
+    // user.password is the hashed password stored in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).send("Invalid credentials!");
+    }
+
+    res.send("Login successful!"); // If login is successful
+  }
+  catch (error){
+    console.error("Error during login:", error);
+    res.status(500).send("Something went wrong during login!");
+  }
+});
+//
+//
+//
+//
+//
+//
+//           Get user by email
+//
 app.get("/user", async (req, res) => {
   const userEmail = req.body.email;
   try {
@@ -560,3 +615,10 @@ connectDB()
   .catch((err) => {
     console.error("Database connection failed:", err);
   });
+//
+//
+//
+//
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//                                              S-2 E-9
