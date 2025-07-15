@@ -317,7 +317,7 @@
 //   res.send("All data deleted successfully!");
 // });
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//                                  EP - S2 - E6;                    
+//                                  EP - S2 - E6;
 
 // const express = require("express");
 // const connectDB = require("./config/database.js"); // Import the database connection
@@ -355,24 +355,186 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                 S-2  E-7
 
+// const express = require("express");
+// const connectDB = require("./config/database.js"); // Import the database connection
+// const app = express();
+// const User = require("./Models/user.js"); // Import the User model
+// app.use(express.json()); // Middleware to parse JSON request bodies
+
+// app.post("/signup", async (req, res) => {
+//   const user = new User(req.body);
+//   //  console.log("Received user data:", req.body);
+//   //  Log the received data
+//   try {
+//     await user.save();
+//     res.send("User added successfully!");
+//   } catch (error) {
+//     //  console.error("Error adding user:", error);
+//     res.status(500).send("Error saving the user");
+//   }
+// });
+
+// connectDB()
+//   .then(() => {
+//     console.log("Database connected successfully!");
+
+//     app.listen(7777, () => {
+//       console.log("Server is successfully listening on port 7777...");
+//     });
+//   })
+//   .catch((err) => {
+//     console.error("Database connection failed:", err);
+//   });
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////                              S-2 E-7
+
 const express = require("express");
 const connectDB = require("./config/database.js"); // Import the database connection
 const app = express();
 const User = require("./Models/user.js"); // Import the User model
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  //  console.log("Received user data:", req.body);
-  //  Log the received data
-  try {
-    await user.save();
-    res.send("User added successfully!");
-  } catch (error) {
-    //  console.error("Error adding user:", error);
-    res.status(500).send("Error saving the user");
-  }
-});
+// app.post("/signup", async (req, res) => {
+//   const user = new User(req.body);
+//   //  console.log("Received user data:", req.body);
+//   //  Log the received data
+//   try {
+//     await user.save();
+//     res.send("User added successfully!");
+//   } catch (error) {
+//     //  console.error("Error adding user:", error);
+//     res.status(500).send("Error saving the user");
+//   }
+// });
+//
+//
+//
+//    get user by email
+//
+// app.get("/user", async (req, res) => {
+//   const userEmail = req.body.email;
+//   try {
+//     console.log("Requested Email:", userEmail);
+//     const user = await User.find({ email: userEmail }); // Await the asynchronous operation
+//     res.send(user);
+//   } catch (error) {
+//     res.status(400).send("Something went wrong while fetching user data!");
+//   }
+// });
+//
+//
+//    Get one user by email (many users can have the same email)
+// app.get("/user", async (req, res) => {
+//   const userEmail = req.body.email;
+//   try {
+//     console.log("Requested Email:", userEmail);
+//     const user = await User.findOne({ email: userEmail }); // Await the asynchronous operation
+//     res.send(user);
+//   } catch (error) {
+//     res.status(400).send("Something went wrong while fetching user data!");
+//   }
+// });
+//
+//
+//
+//
+//
+// Feed API - GET /feed - get all the users from the database
+// app.get("/feed", async (req, res) => {
+//   try {
+//     const users = await User.find({}); // Fetch all users from the database
+//     res.send(users); // Send the list of users as a response
+//   } catch (error) {
+//     res.status(500).send("Error fetching users from the database");
+//   }
+// });
+//
+//
+//
+//                  get user by ID
+//
+// app.get("/user/:id", async (req, res) => {
+//   const userId = req.params.id; // Get the user ID from the request parameters
+//   try {
+//     console.log("Requested User ID:", userId);
+//     const user = await User.findById(userId); // Await the asynchronous operation to find the user by ID
+//     if (!user) {
+//       return res.status(404).send("User not found"); // If user not found, send 404 response
+//     }
+//     res.send(user); // Send the user data as a response
+//   } catch (error) {
+//     console.error("Error fetching user by ID:", error);
+//     res.status(500).send("Error fetching user by ID"); // Send 500 response in case of an error
+//   }
+// });
+//
+//
+//
+//
+//
+//            delete user by ID
+//
+// app.delete("/user", async (req, res) => {
+//   const userId = req.body.id; // Get the user ID from the request parameters
+//   try {
+//     console.log("Requested User ID for deletion:", userId);
+//     const user = await User.findByIdAndDelete(userId); // Await the asynchronous operation to find and delete the user by ID
+//     if (!user) {
+//       return res.status(404).send("User not found"); // If user not found, send 404 response
+//     }
+//     res.send("User deleted successfully"); // Send success response
+//   } catch (error) {
+//     console.error("Error deleting user by ID:", error);
+//     res.status(500).send("Error deleting user by ID"); // Send 500 response in case of an error
+//   }
+// });
+//
+//
+//
+//
+//
+// update by find by id and update
+//
+// app.put("/user", async (req, res) => {
+//   const userId = req.body.id; // Get the user ID from the request body
+//   const updateData = req.body; // Get the data to update from the request body
+//   try {
+//     console.log("Requested User ID for update:", userId);
+//     const user = await User.findByIdAndUpdate(userId, updateData, { new: true }); // Await the asynchronous operation to find and update the user by ID
+//     if (!user) {
+//       return res.status(404).send("User not found"); // If user not found, send 404 response
+//     }
+//     res.send(user); // Send the updated user data as a response
+//   } catch (error) {
+//     console.error("Error updating user by ID:", error);
+//     res.status(500).send("Error updating user by ID"); // Send 500 response in case of an error
+//   }
+// });
+//
+//
+//
+//
+//         find one ( by emailId ) and update 
+//
+// app.put("/user", async (req, res) => {
+//   const userEmail = req.body.email; // Get the user email from the request body
+//   const updateData = req.body; // Get the data to update from the request body
+//   try {
+//     console.log("Requested User Email for update:", userEmail);
+//     const user = await User.findOneAndUpdate({ email: userEmail }, updateData, {
+//       new: true,
+//     }); // Await the asynchronous operation to find and update the user by email
+//     if (!user) {
+//       return res.status(404).send("User not found"); // If user not found, send 404 response
+//     }
+//     res.send(user); // Send the updated user data as a response
+//   } catch (error) {
+//     console.error("Error updating user by email:", error);
+//     res.status(500).send("Error updating user by email"); // Send 500 response in case of an error
+//   }
+// });
 
 connectDB()
   .then(() => {
