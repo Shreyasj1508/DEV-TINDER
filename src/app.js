@@ -405,8 +405,8 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added successfully!");
   } catch (error) {
-    //  console.error("Error adding user:", error);
-    res.status(400).send("Error saving the user" + error.message);
+      console.error("Error adding user:", error);
+    res.status(400).send("Error saving the user "+ error.message);
   }
 });
 
