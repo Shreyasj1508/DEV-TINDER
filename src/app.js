@@ -453,8 +453,7 @@ app.post("/login", async (req, res) => {
     }
 
     res.send("Login successful!"); // If login is successful
-  }
-  catch (error){
+  } catch (error) {
     console.error("Error during login:", error);
     res.status(500).send("Something went wrong during login!");
   }
@@ -477,9 +476,11 @@ app.get("/user", async (req, res) => {
     res.status(400).send("Something went wrong while fetching user data!");
   }
 });
-
-//    Get one user by email (many users can have the same email)
-
+//
+//
+//
+//          Get one user by email (many users can have the same email)
+//
 app.get("/user", async (req, res) => {
   const userEmail = req.body.email;
   try {
@@ -490,9 +491,12 @@ app.get("/user", async (req, res) => {
     res.status(400).send("Something went wrong while fetching user data!");
   }
 });
-
-//           Feed API - GET /feed - get all the users from the database
-
+//
+//
+//
+//
+//         Feed API - GET /feed - get all the users from the database
+//
 app.get("/feed", async (req, res) => {
   try {
     const users = await User.find({}); // Fetch all users from the database
@@ -501,9 +505,12 @@ app.get("/feed", async (req, res) => {
     res.status(500).send("Error fetching users from the database");
   }
 });
-
-//                 Get user by ID
-
+//
+//
+//
+//
+//          Get user by ID
+//
 app.get("/user/:id", async (req, res) => {
   const userId = req.params.id; // Get the user ID from the request parameters
   try {
@@ -518,9 +525,13 @@ app.get("/user/:id", async (req, res) => {
     res.status(500).send("Error fetching user by ID"); // Send 500 response in case of an error
   }
 });
-
-//    Delete user by ID
-
+//
+//
+//
+//
+//
+//          Delete user by ID
+//
 app.delete("/user", async (req, res) => {
   const userId = req.body.id; // Get the user ID from the request parameters
   try {
@@ -535,9 +546,13 @@ app.delete("/user", async (req, res) => {
     res.status(500).send("Error deleting user by ID"); // Send 500 response in case of an error
   }
 });
-
-//   update by find by id and update
-
+//
+//
+//
+//
+//
+//         Update by find by id and update
+//
 app.patch("/user/:id", async (req, res) => {
   const userId = req.params?.id; // Get the user ID from the request body
   const updateData = req.body; // Get the data to update from the request body
@@ -583,9 +598,13 @@ app.patch("/user/:id", async (req, res) => {
     res.status(400).send("Something went wrong"); // Send 500 response in case of an error
   }
 });
-
-//Find one ( by emailId ) and update
-
+//
+//
+//
+//
+//
+//         Find one ( by emailId ) and update
+//
 app.put("/user", async (req, res) => {
   const userEmail = req.body.email; // Get the user email from the request body
   const updateData = req.body; // Get the data to update from the request body
@@ -603,7 +622,11 @@ app.put("/user", async (req, res) => {
     res.status(500).send("Error updating user by email"); // Send 500 response in case of an error
   }
 });
-
+//
+//
+//
+//
+//
 connectDB()
   .then(() => {
     console.log("Database connected successfully!");
