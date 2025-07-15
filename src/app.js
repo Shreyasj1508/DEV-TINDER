@@ -395,7 +395,10 @@ const connectDB = require("./config/database.js"); // Import the database connec
 const app = express();
 const User = require("./Models/user.js"); // Import the User model
 app.use(express.json()); // Middleware to parse JSON request bodies
+ 
 
+//          POST API - /signup - add a new user to the database
+//
 // app.post("/signup", async (req, res) => {
 //   const user = new User(req.body);
 //   //  console.log("Received user data:", req.body);
@@ -411,7 +414,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 //
 //
 //
-//    get user by email
+//         get user by email
 //
 // app.get("/user", async (req, res) => {
 //   const userEmail = req.body.email;
@@ -425,7 +428,8 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 // });
 //
 //
-//    Get one user by email (many users can have the same email)
+//          Get one user by email (many users can have the same email)
+//
 // app.get("/user", async (req, res) => {
 //   const userEmail = req.body.email;
 //   try {
@@ -441,7 +445,8 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 //
 //
 //
-// Feed API - GET /feed - get all the users from the database
+//            Feed API - GET /feed - get all the users from the database
+//
 // app.get("/feed", async (req, res) => {
 //   try {
 //     const users = await User.find({}); // Fetch all users from the database
@@ -495,7 +500,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 //
 //
 //
-// update by find by id and update
+//           update by find by id and update
 //
 // app.put("/user", async (req, res) => {
 //   const userId = req.body.id; // Get the user ID from the request body
@@ -535,6 +540,8 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 //     res.status(500).send("Error updating user by email"); // Send 500 response in case of an error
 //   }
 // });
+
+
 
 connectDB()
   .then(() => {
