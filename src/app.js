@@ -484,17 +484,45 @@ app.delete("/user", async (req, res) => {
 
 //   update by find by id and update
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.id; // Get the user ID from the request body
+app.patch("/user/:id", async (req, res) => {
+  const userId = req.params?.id; // Get the user ID from the request body
   const updateData = req.body; // Get the data to update from the request body
+
   try {
+    // Define the allowed fields for update
+    const allowedUpdates = [
+      "firstName",
+      "lastName",
+      "password",
+      "age",
+      "skills",
+    ];
+
+    const updates = Object.keys(updateData);
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+
+    // Check if all updates are valid
+    if (!isValidOperation) {
+      throw new Error("Invalid updates!"); // If any update is not allowed, throw an error
+    }
+
+
+    // If skills exceed 10 items, send a 400 response
+    if(updateData.skills.length > 10) {
+      throw new error("Skills cannot exceed 10 items"); 
+    }
+
+    // console.log("Received update data:", updateData);
+    // Log the received update data
     console.log("Requested User ID for update:", userId);
     const user = await User.findByIdAndUpdate(userId, updateData, {
       runValidators: true, // Ensure that the update respects the schema validation rules
       new: true,
     }); // Await the asynchronous operation to find and update the user by ID
     if (!user) {
-      return res.status(404).send("User not found"); 
+      return res.status(404).send("User not found");
     }
     res.send(user); // Send the updated user data as a response
   } catch (error) {
