@@ -401,13 +401,12 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
   //  console.log("Received user data:", req.body);
-  //  Log the received data
   try {
     await user.save();
     res.send("User added successfully!");
   } catch (error) {
     //  console.error("Error adding user:", error);
-    res.status(500).send("Error saving the user");
+    res.status(400).send("Error saving the user" + error.message);
   }
 });
 

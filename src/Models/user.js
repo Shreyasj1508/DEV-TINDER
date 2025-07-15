@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const validator = require("validator");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is not valid!");
+        }
+      } 
     },
     password: {
       type: String,
@@ -30,11 +34,11 @@ const userSchema = new mongoose.Schema(
       maxLength: 1024,
       trim: true,
       select: false, // Exclude password from query results by default
-      validate(value) {
-        if (value.includes("password")) {
-          throw new Error("Password cannot contain the word 'password'");
+       validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Enter strong password: "+ value);
         }
-      },
+      } 
     },
     age: {
       type: Number,
@@ -58,6 +62,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fdummy-profile&psig=AOvVaw1iNN7EGm6TkJL6Rl3fE8NM&ust=1752658271908000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLjh24DHvo4DFQAAAAAdAAAAABAE",
+        validate(value) {
+          if (!validator.isURL(value)) {
+            throw new Error("Photo URL is not valid!");
+          }
+        }
     },
     about: {
       type: String,
