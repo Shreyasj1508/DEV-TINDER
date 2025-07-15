@@ -405,8 +405,8 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added successfully!");
   } catch (error) {
-      console.error("Error adding user:", error);
-    res.status(400).send("Error saving the user "+ error.message);
+    //  console.error("Error adding user:", error);
+    res.status(400).send("Error saving the user " + error.message);
   }
 });
 
@@ -507,10 +507,9 @@ app.patch("/user/:id", async (req, res) => {
       throw new Error("Invalid updates!"); // If any update is not allowed, throw an error
     }
 
-
     // If skills exceed 10 items, send a 400 response
-    if(updateData.skills.length > 10) {
-      throw new error("Skills cannot exceed 10 items"); 
+    if (updateData.skills.length > 10) {
+      throw new error("Skills cannot exceed 10 items");
     }
 
     // console.log("Received update data:", updateData);

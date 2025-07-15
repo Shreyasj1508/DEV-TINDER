@@ -5,5 +5,6 @@ const connectDB = async () => {
     "mongodb+srv://shreyasjaiswal:IkUCwf7Vj9DheATf@namaste-dev.ab3ld6b.mongodb.net/DEV-TINDER"
   );
 };
-
 module.exports = connectDB;
+
+
