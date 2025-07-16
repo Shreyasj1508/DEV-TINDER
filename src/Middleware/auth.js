@@ -3,18 +3,18 @@ const User = require("../Models/user");
 
 const userAuth = async (req, res, next) => {
   // read the token from the cookies
-
-  const {token} = req.cookies;
- if(!token) {
-    return res.status(401).send("Access denied. No token provided.");
+ try {
+  console.log("Cookies:", req.cookies);
+  
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).send("Please Login first!");
   }
-  try {
-    const decodedMessage = jwt.verify(token, "secretkey");
+ 
+    const decodedMessage = await jwt.verify(token, "secretkey");
     const { _id } = decodedMessage; // Extract the user ID from the decoded token
-    // console.log("Decoded message:", decodedMessage);
-    // console.log("User ID from token:", _id);
-    //   Need cookies-parser middleware to read cookies
-    //   console.log("Cookies:", cookies);
+    
+
     const user = await User.findById(_id); // Find the user by ID from the decoded token
     if (!user) {
       throw new Error("User not found!");

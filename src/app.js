@@ -400,9 +400,10 @@ app.use(express.json());
 const cookieParser = require("cookie-parser");
 app.use(cookieParser()); // Middleware to parse cookies
 const jwt = require("jsonwebtoken"); // Import JWT for token generation and validation
-const UserAuth = require("./Middleware/auth"); // Import the authentication middleware
+const userAuth = require("./Middleware/auth"); // Import the authentication middleware
 const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
-const userAuth = require("./Middleware/auth");
+
+
 //
 //
 //          POST API - /signup - add a new user to the database
@@ -439,27 +440,25 @@ app.post("/signup", async (req, res) => {
 //           Login API
 //
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body; // Extract email and password from the request
   try {
+  const { email, password } = req.body; // Extract email and password from the request
+
     // Find the user by email & Include the password field in the query result
     const user = await User.findOne({ email }).select("+password");
 
     console.log("User found:", user);
     if (!user) {
-      return res.status(404).send("Invalid credentials!");
+    throw new Error("Invalid credentials ! ");
     }
 
     // Compare the provided password (write by client) with the stored hashed password (actual passwords )
     // user.password is the hashed password stored in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (isMatch) {
+    const isMatch = await user.validatePassword(password); // Call the validatePassword method from the User model
+   //  if (!isMatch) return res.status(401).send("Invalid credentials!");
+    if(isMatch) {
       // Create a JWT token
-      const token = await jwt.sign({ _id: user._id }, "secretkey", {
-        expiresIn: "1d",
-      });
-      //   console.log("Generated JWT token:", token);
-
+      const token = await user.getJWT(); // Call the getJWT method from the User model
+ 
       // Add the token to cookeies and sent response back to the client
       res.cookie("token", token, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Token expires in 1 day
@@ -467,12 +466,13 @@ app.post("/login", async (req, res) => {
       // console.log("Login successful for user:", user.email);
 
       res.send("Login successful!"); // If login is successful
-    } else {
-      res.status(401).send("Invalid credentials!");
+    }
+    else{
+      throw new Error("Invalid credentials!");
     }
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).send("Something went wrong during login!");
+    res.status(400).send("ERROR: " + error.message);
   }
 });
 //
@@ -485,15 +485,16 @@ app.post("/login", async (req, res) => {
 //
 //         Profile API
 //
-app.get("/profile", UserAuth, async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const user = req.user; // The user is attached to the request object by the authentication middleware
+    const user = req.user; // The user is attached to the request object by the authentication    middleware
 
     res.send(user); // Send the user data as a response
   } catch (error) {
     res.status(400).send("ERROR! " + error.message);
   }
 });
+//
 //
 //
 //

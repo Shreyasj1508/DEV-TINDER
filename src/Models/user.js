@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -64,7 +66,7 @@ const userSchema = new mongoose.Schema(
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("Photo URL is not valid!");
-        }  
+        }
       },
     },
     about: {
@@ -79,5 +81,24 @@ const userSchema = new mongoose.Schema(
     timestamps: true, // Automatically add createdAt and updatedAt fields
   }
 );
+
+// Method to generate JWT token for the user
+userSchema.methods.getJWT = async function () {
+  const user = this; // 'this' refers to the instance of the user model
+
+  const token = await jwt.sign({ _id: user._id },
+  "secretkey",
+  {
+    expiresIn: "1d",
+  });
+  return token; // Return the generated JWT token
+};
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this; // 'this' refers to the instance of the user model
+  const hashedPassword = user.password; // Get the hashed password from the user instance
+  const isMatch = await bcrypt.compare(passwordInputByUser , hashedPassword); // Compare the provided password with the hashed password in the database
+  return isMatch; // Return true if passwords match, false otherwise
+};
 
 module.exports = mongoose.model("User", userSchema);
