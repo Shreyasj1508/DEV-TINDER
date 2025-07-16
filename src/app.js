@@ -402,6 +402,7 @@ app.use(cookieParser()); // Middleware to parse cookies
 const jwt = require("jsonwebtoken"); // Import JWT for token generation and validation
 const UserAuth = require("./Middleware/auth"); // Import the authentication middleware
 const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
+const userAuth = require("./Middleware/auth");
 //
 //
 //          POST API - /signup - add a new user to the database
@@ -454,11 +455,15 @@ app.post("/login", async (req, res) => {
 
     if (isMatch) {
       // Create a JWT token
-      const token = await jwt.sign({ _id: user._id }, "secretkey");
+      const token = await jwt.sign({ _id: user._id }, "secretkey", {
+        expiresIn: "1d",
+      });
       //   console.log("Generated JWT token:", token);
 
       // Add the token to cookeies and sent response back to the client
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Token expires in 1 day
+      });
       // console.log("Login successful for user:", user.email);
 
       res.send("Login successful!"); // If login is successful
@@ -494,11 +499,12 @@ app.get("/profile", UserAuth, async (req, res) => {
 //
 //
 //
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  const user = req.user; // The user is attached to the request object by the authentication middleware
 
-
-
-
-
+  console.log("Sending connection request...");
+  res.send(user.firstName + " Elon sent connection request!");
+});
 
 //
 //
