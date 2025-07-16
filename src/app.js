@@ -397,6 +397,10 @@ const User = require("./Models/user.js"); // Import the User model
 app.use(express.json()); // Middleware to parse JSON request bodies
 const { validateSignup } = require("./utils/validation");
 app.use(express.json());
+const cookieParser = require("cookie-parser");
+app.use(cookieParser()); // Middleware to parse cookies
+const jwt = require("jsonwebtoken"); // Import JWT for token generation and validation
+
 const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
 //
 //
@@ -448,16 +452,65 @@ app.post("/login", async (req, res) => {
     // user.password is the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(400).send("Invalid credentials!");
-    }
+    if (isMatch) {
+      // Create a JWT token
+      const token = await jwt.sign({ _id: user._id }, "secretkey");
+   //   console.log("Generated JWT token:", token);
 
-    res.send("Login successful!"); // If login is successful
+      // Add the token to cookeies and sent response back to the client
+      res.cookie("token", token);
+      // console.log("Login successful for user:", user.email);
+
+      res.send("Login successful!"); // If login is successful
+    } else {
+      res.status(401).send("Invalid credentials!");
+    }
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).send("Something went wrong during login!");
   }
 });
+//
+//
+//
+//
+//
+//
+//
+//
+//         Profile API
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies; // Extract the token from cookies
+
+    if (!token) {
+      throw new Error("No token provided! Please login first.");
+    }
+
+    //      Validate my token
+    const decodedMessage = await jwt.verify(token, "secretkey");
+    const { _id } = decodedMessage; // Extract the user ID from the decoded token
+    // console.log("Decoded message:", decodedMessage);
+  //  console.log("User ID from token:", _id);
+
+    //   Need cookies-parser middleware to read cookies
+    //   console.log("Cookies:", cookies);
+    const user = await User.findById(_id); // Find the user by ID from the decoded token
+    if (!user) 
+    {
+      throw new error("User not found!");
+    }
+
+    res.send(user); // Send the user data as a response
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(400).send("ERROR! " + error.message);
+  }
+});
+//
+//
+//
 //
 //
 //
@@ -644,4 +697,3 @@ connectDB()
 //
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//                                              S-2 E-9
