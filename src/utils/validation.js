@@ -29,6 +29,25 @@ const validateSignup = (req) => {
   }
 };
 
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "age",
+    "photo",
+    "gender",
+    "about",
+    "skills",
+  ];
+
+  const isEditAllowed = Object.keys(req.body).every((fields) =>
+    allowedEditFields.includes(fields)
+  );
+  if (!isEditAllowed) new Error("Invalid fields for profile edit.");
+  return isEditAllowed;
+};
+
 module.exports = {
   validateSignup,
+  validateEditProfileData,
 };
