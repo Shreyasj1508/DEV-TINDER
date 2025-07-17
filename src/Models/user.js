@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minLength: 3,
+      index: true, // Indexing for faster search
       maxLength: 40,
       trim: true,
     },
@@ -86,6 +87,14 @@ const userSchema = new mongoose.Schema(
     timestamps: true, // Automatically add createdAt and updatedAt fields
   }
 );
+
+
+
+
+
+
+
+
 
 // Method to generate JWT token for the user
 userSchema.methods.getJWT = async function () {

@@ -65,7 +65,8 @@ requestRouter.post(
       //   console.log("Connection request sent successfully!");
 
       res.json({
-        message: "Connection request sent successfully!",
+        message:
+          req.user.firstName + " is " + status + " in " + toUser.firstName,
         data: data,
       });
     } catch (error) {
@@ -73,4 +74,6 @@ requestRouter.post(
     }
   }
 );
+
 module.exports = requestRouter;
+

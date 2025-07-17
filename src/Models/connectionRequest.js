@@ -24,6 +24,10 @@ const connectionRequestSchema = new mongoose.Schema(
 );
 //
 //
+// Indexing for faster search
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+//
+//
 // Middleware to ensure that the fromUserId and toUserId are not the same
 connectionRequestSchema.pre("save", function (next) {
   const connnectionRequest = this;
