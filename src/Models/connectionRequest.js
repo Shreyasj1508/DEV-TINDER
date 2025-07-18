@@ -12,6 +12,10 @@ const connectionRequestSchema = new mongoose.Schema(
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "User",
+      // This will create a reference to the User model
+      // and ensure that the toUserId is a valid ObjectId
+      // from the User collection
     },
     status: {
       type: String,
