@@ -66,21 +66,18 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 // 3. ignored users
 // 4. already sent requests
 
-
-// Get the feed of users for the loggedIn user
-// This will return users who are not connected to the loggedIn user
 userRouter.get("/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
 
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 15;
-    limit = limit > 50 ? 50 : limit;
+    limit = limit > 30 ? 30 : limit;
     const skip = (page - 1) * limit;
 
     // find all conections requests -> send or received
     const connectionRequests = await ConnectionRequest.find({
-       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     }).select("fromUserId  toUserId");
 
     const hideUsersFromFeed = new Set();
@@ -92,8 +89,8 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     // Data Structure set to array to use in mongoose query
     const users = await User.find({
       $and: [
-        { _id: { $nin: Array.from(hideUsersFromFeed) } }, // nin = not in 
-        { _id: { $ne: loggedInUser._id } }, //  ne =  not equal 
+        { _id: { $nin: Array.from(hideUsersFromFeed) } }, // nin = not in
+        { _id: { $ne: loggedInUser._id } }, //  ne =  not equal
       ],
     })
       .select(USER_SAFE_DATA)
@@ -105,4 +102,12 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// pagination concept
+//
+// feed?page=1&limit=10  => 1-10  => .skip(0) .limit(10)
+// feed?page=2&limit=10  => 11-20  => .skip(10) .limit(10)
+// feed?page=3&limit=10  => 21-30  => .skip(20) .limit(10)
+// feed?page=4&limit=10  => 31-40  => .skip(30) .limit(10)
+
 module.exports = userRouter;
