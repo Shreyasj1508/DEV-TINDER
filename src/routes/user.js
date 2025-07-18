@@ -1,13 +1,11 @@
 const express = require("express");
 const userRouter = express.Router();
-const userAuth  = require("../Middleware/auth");
+const userAuth = require("../Middleware/auth");
 const ConnectionRequest = require("../Models/connectionRequest");
 const User = require("../Models/user");
 
-
 // using this because we don't want to expose sensitive data like email or password
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
-
 
 // Get all the pending connection request for the loggedIn user
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -18,7 +16,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
       toUserId: loggedInUser._id,
       status: "interested",
     }).populate("fromUserId", USER_SAFE_DATA);
- //}).populate("fromUserId", ["firstName", "lastName"]);
+    //}).populate("fromUserId", ["firstName", "lastName"]);
 
     res.json({
       message: "Data fetched successfully",
@@ -28,7 +26,6 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     res.status(400).send("ERROR: " + err.message);
   }
 });
-
 
 // Get all the connections of the loggedIn user
 userRouter.get("/user/connections", userAuth, async (req, res) => {
@@ -44,10 +41,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", USER_SAFE_DATA)
       .populate("toUserId", USER_SAFE_DATA);
 
- 
-
     // Transforming the connection requests to get the user data
-    // If the loggedIn user is the fromUserId, we return toUserId,  
+    // If the loggedIn user is the fromUserId, we return toUserId,
     // otherwise we return fromUserId
     // This is to ensure that we get the user data of the connected user
 
@@ -64,6 +59,12 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
+//  Feed API
+// User should see all the users cards except
+// 1. Users who are already connected
+// 2. his own card
+// 3. ignored users
+// 4. already sent requests
 
 
 // Get the feed of users for the loggedIn user
@@ -73,12 +74,13 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     const loggedInUser = req.user;
 
     const page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10;
+    let limit = parseInt(req.query.limit) || 15;
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
+    // find all conections requests -> send or received
     const connectionRequests = await ConnectionRequest.find({
-      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     }).select("fromUserId  toUserId");
 
     const hideUsersFromFeed = new Set();
@@ -87,10 +89,11 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       hideUsersFromFeed.add(req.toUserId.toString());
     });
 
+    // Data Structure set to array to use in mongoose query
     const users = await User.find({
       $and: [
-        { _id: { $nin: Array.from(hideUsersFromFeed) } },
-        { _id: { $ne: loggedInUser._id } },
+        { _id: { $nin: Array.from(hideUsersFromFeed) } }, // nin = not in 
+        { _id: { $ne: loggedInUser._id } }, //  ne =  not equal 
       ],
     })
       .select(USER_SAFE_DATA)
