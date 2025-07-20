@@ -32,8 +32,8 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body; // Extract email and password from the request
-
+    const { emailId, password } = req.body; // Extract email and password from the request
+    const email = emailId;
     // Find the user by email & Include the password field in the query result
     const user = await User.findOne({ email }).select("+password");
 
@@ -56,7 +56,7 @@ authRouter.post("/login", async (req, res) => {
       });
       // console.log("Login successful for user:", user.email);
 
-      res.send("Login successful!"); // If login is successful
+      res.send(user); // If login is successful
     } else {
       throw new Error("Invalid credentials!");
     }
@@ -66,16 +66,11 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout",async (req, res) => {
- res.cookie("token", "null", {
-   expires: new Date(Date.now()),  // Set the cookie to expire immediately
- });
- res.send("Logout successful!");
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token", "null", {
+    expires: new Date(Date.now()), // Set the cookie to expire immediately
+  });
+  res.send("Logout successful!");
 });
-
-
-
-
-
 
 module.exports = authRouter;
