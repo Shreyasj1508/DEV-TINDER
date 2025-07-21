@@ -32,34 +32,31 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
   try {
-    const { emailId, password } = req.body; // Extract email and password from the request
-    const email = emailId;
-    // Find the user by email & Include the password field in the query result
+    const { email, password } = req.body;
+
     const user = await User.findOne({ email }).select("+password");
-
     console.log("User found:", user);
-    if (!user) {
-      throw new Error("Invalid credentials ! ");
-    }
 
-    // Compare the provided password (write by client) with the stored hashed password (actual passwords )
-    // user.password is the hashed password stored in the database
-    const isMatch = await user.validatePassword(password); // Call the validatePassword method from the User model
-    //  if (!isMatch) return res.status(401).send("Invalid credentials!");
-    if (isMatch) {
-      // Create a JWT token
-      const token = await user.getJWT(); // Call the getJWT method from the User model
+    if (!user) throw new Error("Invalid credentials!");
 
-      // Add the token to cookeies and sent response back to the client
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Token expires in 1 day
-      });
-      // console.log("Login successful for user:", user.email);
+    const isMatch = await user.validatePassword(password);
 
-      res.send(user); // If login is successful
-    } else {
-      throw new Error("Invalid credentials!");
-    }
+    if (!isMatch) throw new Error("Invalid credentials!");
+
+    const token = await user.getJWT();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    res.send({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      photo: user.photo,
+    });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(400).send("ERROR: " + error.message);

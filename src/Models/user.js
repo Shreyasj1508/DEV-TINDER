@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema(
       minLength: 6,
       maxLength: 1024,
       trim: true,
+      select: false, // Do not return password in queries by default
       validate(value) {
         if (!validator.isStrongPassword(value)) {
           throw new Error("Enter strong password: " + value);
@@ -54,9 +55,9 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum:{
-        values:["male","female","other"],
-        message: `{VALUE} is not a valid ` 
+      enum: {
+        values: ["male", "female", "other"],
+        message: `{VALUE} is not a valid `,
       },
       //  OR
       // validate(value) {
@@ -88,21 +89,11 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-
-
-
-
-
-
-
-
 // Method to generate JWT token for the user
 userSchema.methods.getJWT = async function () {
   const user = this; // 'this' refers to the instance of the user model
 
-  const token = await jwt.sign({ _id: user._id },
-  "secretkey",
-  {
+  const token = await jwt.sign({ _id: user._id }, "secretkey", {
     expiresIn: "1d",
   });
   return token; // Return the generated JWT token
@@ -111,7 +102,7 @@ userSchema.methods.getJWT = async function () {
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
   const user = this; // 'this' refers to the instance of the user model
   const hashedPassword = user.password; // Get the hashed password from the user instance
-  const isMatch = await bcrypt.compare(passwordInputByUser , hashedPassword); // Compare the provided password with the hashed password in the database
+  const isMatch = await bcrypt.compare(passwordInputByUser, hashedPassword); // Compare the provided password with the hashed password in the database
   return isMatch; // Return true if passwords match, false otherwise
 };
 
