@@ -5,7 +5,7 @@ const ConnectionRequest = require("../Models/connectionRequest");
 const User = require("../Models/user");
 
 // using this because we don't want to expose sensitive data like email or password
-const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
+const USER_SAFE_DATA = "firstName lastName photo photoURL age gender about skills location occupation interests";
 
 // Get all the pending connection request for the loggedIn user
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -97,9 +97,28 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    res.json({ data: users });
+    // Fix photo URLs for users
+    const usersWithValidPhotos = users.map(user => {
+      const userObj = user.toObject();
+      if (!userObj.photo || userObj.photo.includes('google.com')) {
+        userObj.photo = "https://via.placeholder.com/300x300/007bff/ffffff?text=User";
+      }
+      if (!userObj.photoURL || userObj.photoURL.includes('google.com')) {
+        userObj.photoURL = "https://via.placeholder.com/300x300/007bff/ffffff?text=User";
+      }
+      return userObj;
+    });
+
+    res.json({ 
+      success: true,
+      data: usersWithValidPhotos,
+      message: "Feed data fetched successfully"
+    });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ 
+      success: false,
+      message: err.message 
+    });
   }
 });
 
