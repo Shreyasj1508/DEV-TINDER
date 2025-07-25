@@ -26,6 +26,6 @@ const userAuth = async (req, res, next) => {
     res.status(400).send("ERROR! " + error.message);
   }
 };
-module.exports = userAuth;
+module.exports = { userAuth };
 // validate the token
 // find the user by ID from the decoded token
