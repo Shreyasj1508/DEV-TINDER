@@ -389,16 +389,25 @@
 //
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////                              S-2 E-7 and E-8
-const cors = require("cors");
+
+
 const express = require("express");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const connectDB = require("./config/database.js"); // Import the database connection
+const http = require("http");
+const socketIo = require("socket.io");
 
+const connectDB = require("./config/database.js");
+const handleChatSocket = require("../socket/chatSocket.js");
+
+// Initialize express app and http server
 const app = express();
+const server = http.createServer(app);
 
+// Enable CORS for frontend ports
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   })
 );
@@ -406,28 +415,41 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Setup socket.io with CORS
+const io = socketIo(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+// Initialize chat socket
+handleChatSocket(io);
+
+// Import and use routes
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
-const chatRoutes = require("./routes/chat");
-app.use("/chat", chatRoutes);
+const chatRouter = require("./routes/chat");
+
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/chat", chatRouter);
 
+// Start server after DB connection
 connectDB()
   .then(() => {
-    console.log("Database connected successfully!");
-
-    app.listen(7777, () => {
-      console.log("Server is successfully listening on port 7777...");
+    console.log("✅ Database connected successfully!");
+    const PORT = process.env.PORT || 7777;
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log("💬 Socket.io server ready for chat");
     });
   })
   .catch((err) => {
-    console.error("Database connection failed:", err);
+    console.error("❌ Database connection failed:", err);
   });
-//
-//
-//

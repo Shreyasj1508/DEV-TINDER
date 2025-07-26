@@ -20,15 +20,18 @@ const messageSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  readAt: {
-    type: Date
+  chatRoom: {
+    type: String,
+    required: true
   }
 }, {
   timestamps: true
 });
 
-// Index for efficient queries
-messageSchema.index({ senderId: 1, receiverId: 1, createdAt: -1 });
-messageSchema.index({ receiverId: 1, isRead: 1 });
+// Index for faster queries
+messageSchema.index({ chatRoom: 1, createdAt: -1 });
+messageSchema.index({ senderId: 1, receiverId: 1 });
 
-module.exports = mongoose.model('Message', messageSchema);
+const Message = mongoose.model('Message', messageSchema);
+module.exports = Message;
+

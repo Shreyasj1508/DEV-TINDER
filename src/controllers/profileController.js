@@ -3,7 +3,7 @@ const User = require('../Models/user');
 // Get user profile
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user._id).select('-password -preferences');
     
     if (!user) {
       return res.status(404).json({
@@ -101,7 +101,7 @@ const updateProfile = async (req, res) => {
         new: true, 
         runValidators: true 
       }
-    ).select('-password');
+    ).select('-password -preferences');
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -156,7 +156,7 @@ const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
     
-    const user = await User.findById(userId).select('-password -email');
+    const user = await User.findById(userId).select('-password -email -preferences');
     
     if (!user) {
       return res.status(404).json({
@@ -197,7 +197,7 @@ const updateOnlineStatus = async (req, res) => {
         lastSeen: new Date()
       },
       { new: true }
-    ).select('-password');
+    ).select('-password -preferences');
 
     res.json({
       success: true,
