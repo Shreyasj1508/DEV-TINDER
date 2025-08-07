@@ -15,6 +15,12 @@ const handleChatSocket = (io) => {
       console.log(`${firstName} joined chat room: ${chatRoom}`);
     });
 
+    // Handle video call signaling
+    socket.on('video-signal', ({ roomId, signal }) => {
+      console.log(`Video signal received for room ${roomId}`);
+      socket.to(roomId).emit('video-signal', { signal });
+    });
+
     // Handle sending messages
     socket.on('sendMessage', async ({ userId, targetUserId, text, firstName, lastName }) => {
       try {

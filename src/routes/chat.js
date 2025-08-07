@@ -91,6 +91,8 @@ router.get('/recent', userAuth, async (req, res) => {
       // Removed $limit to return all recent chats
     ]);
 
+    // Debug: Print aggregation result
+    console.log('Recent messages aggregation result:', recentMessages);
     // Populate user details
     const populatedChats = await User.populate(recentMessages, {
       path: '_id',
