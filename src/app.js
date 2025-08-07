@@ -407,7 +407,7 @@ const server = http.createServer(app);
 // Enable CORS for frontend ports
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin:https:'https://dev-tinder-ui-ten.vercel.app',
     credentials: true,
   })
 );
