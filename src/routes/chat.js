@@ -88,9 +88,7 @@ router.get('/recent', userAuth, async (req, res) => {
           }
         }
       },
-      {
-        $limit: 10
-      }
+      // Removed $limit to return all recent chats
     ]);
 
     // Populate user details

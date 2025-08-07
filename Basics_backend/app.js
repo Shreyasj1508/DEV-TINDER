@@ -40,9 +40,26 @@ const app = express();
 //   }
 // );
 
-// app.listen(7777, () => {
-//   console.log("Server is successfully listening on port 7777...");
-// });
+
+// --- SOCKET.IO SETUP ---
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+
+// --- CHAT SOCKET HANDLER ---
+const handleChatSocket = require("../socket/chatSocket");
+handleChatSocket(io);
+
+server.listen(7777, () => {
+  console.log("Server is successfully listening on port 7777...");
+});
 //
 // OUTPUT -> ONLY SEND REQUEST TO THE FIRST HANDLER
 //
@@ -286,20 +303,35 @@ const app = express();
 //
 //
 
-app.get("/user", (req, res, next) => {
-  console.log("Handling the route user 2");
-  res.send("This is the second response from user route 2!");
+// app.get("/user", (req, res, next) => {
+//   console.log("Handling the route user 2");
+//   res.send("This is the second response from user route 2!");
+// });
+// app.get("/user", (req, res, next) => {
+//   console.log("Handling the route user 1");
+//   next(); // Call next to pass control to the next middleware
+// });
+
+// --- RECENT CHATS ROUTE WITH UNREAD MESSAGE COUNT ---
+app.get("/chats", (req, res) => {
+  // For demonstration, use mock data. Replace with DB logic as needed.
+  const recentChats = [
+    {
+      chatId: "chat1",
+      user: { id: "user2", name: "Alice" },
+      lastMessage: "Hey there!",
+      unreadCount: 3
+    },
+    {
+      chatId: "chat2",
+      user: { id: "user3", name: "Bob" },
+      lastMessage: "See you soon.",
+      unreadCount: 0
+    }
+    // ...more chats...
+  ];
+  res.json(recentChats);
 });
-app.get("/user", (req, res, next) => {
-  console.log("Handling the route user 1");
-  next(); // Call next to pass control to the next middleware
-});
-
-//
-//
-//
-
-
 
 app.listen(7777, () => {
   console.log("Server is successfully listening on port 7777...");

@@ -32,12 +32,11 @@ const handleChatSocket = (io) => {
 
         await newMessage.save();
 
-        // Emit to both users in the chat room
+        // Emit to both users in the chat room with frontend-compatible keys
         io.to(chatRoom).emit('messageReceived', {
-          _id: newMessage._id,
+          messageId: newMessage._id,
           senderId: userId,
-          firstName,
-          lastName,
+          senderName: `${firstName || ''} ${lastName || ''}`.trim(),
           text: text.trim(),
           createdAt: newMessage.createdAt
         });

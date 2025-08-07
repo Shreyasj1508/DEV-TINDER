@@ -11,18 +11,29 @@ const USER_SAFE_DATA = "firstName lastName photo photoURL age gender about skill
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+    console.log('[DEBUG] /user/requests/received called for user:', loggedInUser._id);
 
+    // Find all requests sent TO this user with status 'interested'
     const connectionRequests = await ConnectionRequest.find({
       toUserId: loggedInUser._id,
       status: "interested",
     }).populate("fromUserId", USER_SAFE_DATA);
-    //}).populate("fromUserId", ["firstName", "lastName"]);
+
+    console.log('[DEBUG] /user/requests/received for', loggedInUser._id, 'found:', connectionRequests.length, 'requests');
+    if (connectionRequests.length === 0) {
+      // If nothing found, log all requests for this user regardless of status for debugging
+      const allRequests = await ConnectionRequest.find({
+        toUserId: loggedInUser._id
+      }).populate("fromUserId", USER_SAFE_DATA);
+      console.log('[DEBUG] No "interested" requests found. All requests for user:', allRequests);
+    }
 
     res.json({
       message: "Data fetched successfully",
       data: connectionRequests,
     });
   } catch (err) {
+    console.error('[ERROR] /user/requests/received:', err);
     res.status(400).send("ERROR: " + err.message);
   }
 });
@@ -75,10 +86,14 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     limit = limit > 30 ? 30 : limit;
     const skip = (page - 1) * limit;
 
-    // find all conections requests -> send or received
+    // Only hide users with 'accepted' or 'interested' connection requests
     const connectionRequests = await ConnectionRequest.find({
-      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
-    }).select("fromUserId  toUserId");
+      $or: [
+        { fromUserId: loggedInUser._id },
+        { toUserId: loggedInUser._id }
+      ],
+      status: { $in: ["accepted", "interested"] }
+    }).select("fromUserId toUserId");
 
     const hideUsersFromFeed = new Set();
     connectionRequests.forEach((req) => {
