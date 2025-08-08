@@ -390,6 +390,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////                              S-2 E-7 and E-8
 
+// server.js
 
 const express = require("express");
 const cors = require("cors");
@@ -404,10 +405,14 @@ const handleChatSocket = require("../socket/chatSocket.js");
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS for frontend ports
+// CORS for API routes
 app.use(
   cors({
-    origin:https:'https://dev-tinder-ui-ten.vercel.app',
+    origin: [
+      "https://dev-tinder-ui-ten.vercel.app", // deployed frontend
+      "http://localhost:5173",               // local dev
+      "http://localhost:3000"                // alt local dev
+    ],
     credentials: true,
   })
 );
@@ -415,19 +420,23 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Setup socket.io with CORS
+// Socket.io with CORS
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      "https://dev-tinder-ui-ten.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000"
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-// Initialize chat socket
+// Chat socket handler
 handleChatSocket(io);
 
-// Import and use routes
+// Routes
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
@@ -440,16 +449,21 @@ app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/chat", chatRouter);
 
-// Start server after DB connection
+// DB connection and server start
 connectDB()
   .then(() => {
     console.log("✅ Database connected successfully!");
     const PORT = process.env.PORT || 7777;
     server.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
       console.log("💬 Socket.io server ready for chat");
     });
   })
   .catch((err) => {
     console.error("❌ Database connection failed:", err);
   });
+
+// Optional health check endpoint for Render
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
